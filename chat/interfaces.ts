@@ -82,12 +82,19 @@ export namespace Conversation {
         sendAd(text: string): Promise<void>
     }
 
+    export interface ConsoleConversation extends Conversation {        
+    }
+
     export function isPrivate(conversation: Conversation): conversation is PrivateConversation {
         return (<Partial<PrivateConversation>>conversation).character !== undefined;
     }
 
     export function isChannel(conversation: Conversation): conversation is ChannelConversation {
         return (<Partial<ChannelConversation>>conversation).channel !== undefined;
+    }
+
+    export function isConsole(conversation: Conversation): conversation is ConsoleConversation {
+        return (<Partial<ConsoleConversation>>conversation) !== undefined;
     }
 
     export interface State {
