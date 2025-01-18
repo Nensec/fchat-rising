@@ -1,6 +1,6 @@
 <template>
     <sidebar id="user-list" :label="l('users.title')" icon="fa-users" :right="true" :open="expanded">
-        <tabs style="flex-shrink:0" :tabs="channel ? { friends: l('users.friends'), members: l('users.members') } : { profile: 'Profile', friends: l('users.friends') }" v-model="tab"></tabs>
+        <tabs style="flex-shrink:0" :tabs="isChannel ? { friends: l('users.friends'), members: l('users.members') } : isPrivate ? { profile: 'Profile', friends: l('users.friends') } : { friends: l('users.friends') }" v-model="tab"></tabs>
         <div class="users" style="padding-left:10px" v-show="tab === 'friends'">
             <h4>{{l('users.friends')}}</h4>
             <div v-for="character in friends" :key="character.name">
@@ -11,7 +11,7 @@
                 <user :character="character" :showStatus="true" :bookmark="false"></user>
             </div>
         </div>
-        <div v-if="channel" style="padding-left:5px;flex:1;display:flex;flex-direction:column" v-show="tab === 'members'">
+        <div v-if="isChannel" style="padding-left:5px;flex:1;display:flex;flex-direction:column" v-show="tab === 'members'">
             <div class="users" style="flex:1;padding-left:5px">
                 <h4>{{l('users.memberCount', channel.sortedMembers.length)}} <a class="btn sort" @click="switchSort"><i class="fa fa-sort"></i></a></h4>
                 <div v-for="member in filteredMembers" :key="member.character.name">
@@ -25,13 +25,11 @@
                 <input class="form-control" v-model="filter" :placeholder="l('filter')" type="text"/>
             </div>
         </div>
-        <div v-if="!channel" style="flex:1;display:flex;flex-direction:column" class="profile" v-show="tab === 'profile'">
-
+        <div v-if="isPrivate" style="flex:1;display:flex;flex-direction:column" class="profile" v-show="tab === 'profile'">
           <a :href="profileUrl" target="_blank" class="btn profile-button">
               <span class="fa fa-fw fa-user"></span>
               Full Profile
           </a>
-
           <character-page :authenticated="true" :oldApi="true" :name="profileName" :image-preview="true" ref="characterPage"></character-page>
         </div>
     </sidebar>
@@ -102,8 +100,20 @@
             return core.characters.bookmarks.slice().filter((x) => core.characters.friends.indexOf(x) === -1).sort(this.sorter);
         }
 
+        get isConsole() {
+          return Conversation.isConsole(core.conversations.selectedConversation);
+        }
+
+        get isChannel() {
+          return Conversation.isChannel(core.conversations.selectedConversation);
+        }
+
+        get isPrivate() {
+          return Conversation.isPrivate(core.conversations.selectedConversation);
+        }
+
         get channel(): Channel {
-            return (<Conversation.ChannelConversation>core.conversations.selectedConversation).channel;
+          return (<Conversation.ChannelConversation>core.conversations.selectedConversation).channel;
         }
 
         get profileName(): string | undefined {

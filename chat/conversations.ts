@@ -535,7 +535,7 @@ class ChannelConversation extends Conversation implements Interfaces.ChannelConv
 }
 
 
-class ConsoleConversation extends Conversation {
+class ConsoleConversation extends Conversation implements Interfaces.ConsoleConversation {
     readonly context = CommandContext.Console;
     readonly name = l('chat.consoleTab');
     readonly maxMessageLength = undefined;
